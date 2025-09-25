@@ -37,7 +37,7 @@ class ExpressionWriter {
     }
 
     private fun prepareForCalculation(): String {
-        val newExpression = expression.takeLastWhile {
+        val newExpression = expression.dropLastWhile {
             it in "$operationSymbols(."
         }
         if(newExpression.isEmpty()) {
@@ -68,9 +68,13 @@ class ExpressionWriter {
     }
 
     private fun canEnterOperation(operation: Operation): Boolean {
-        if(operation in listOf(Operation.ADD, Operation.SUBTRACT)) {
-            return expression.isEmpty() || expression.last() in "$operationSymbols()0123456789"
+        try {
+            if (operation in listOf(Operation.ADD, Operation.SUBTRACT)) {
+                return expression.isEmpty() || expression.last() in "$operationSymbols()0123456789"
+            }
+            return expression.isNotEmpty() || expression.last() in "0123456789)"
+        } catch (_: NoSuchElementException) {
+            return false
         }
-        return expression.isNotEmpty() || expression.last() in "0123456789)"
     }
 }
